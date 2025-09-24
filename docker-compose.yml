@@ -1,0 +1,34 @@
+services:
+  stmsrvemu:
+    build: .
+    ports:
+      - "80:80"
+      - "27015:27015"
+      - "27016:27016"
+    volumes:
+      - ./emulator.ini:/app/emulator.ini
+      - ./cache:/app/cache
+    depends_on:
+      - mariadb
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=securepassword
+      - MYSQL_DATABASE=stmserver
+      - MYSQL_USER=stmserver
+      - MYSQL_PASSWORD=securepassword
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:
